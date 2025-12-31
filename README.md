@@ -1,3 +1,9 @@
-# Tornadogenesis
- Analysis of severe weather Parameters related to Tornadogenesis
-This project analyzes each parameter's impact on the severe weather potential, where the dependent factor is how conducive each parameter is to tornadogensis. This data analysis study uses IGRA data and SPC tornado data (National Weather Service Information) to conduct analysis using Python. 
+## 2022/2023 Research Project - Tornadogenesis 
+### *The Occurrence of Tornadogenesis by Analyzing Multiple Severe Weather Parameters*
+
+This project analyzes severe-weather parameters' impact on tornado potential, where the dependent factor is how conducive each parameter is to tornadogensis. This study uses data from the Integrated Global Radiosonde Archive (IGRA) and data from the Storm Prediction Center (SPC) to conduct data analysis using pandas, seaborn, scipy, and scikitlearn in Python.
+
+<small> *The SPC is a subranch of the National Weather Service and provided dates/times on observed tornadoes. IGRA is a global database of radiosonde and pilot balloon observations and it provided data at the Norman, Oklahoma station for this project.* </small>
+    
+### Abstract:
+Tornadogenesis is the process by which a tornado forms. The study was conducted to determine the occurrence of tornadogenesis by analyzing various severe weather parameters. The occurrence of tornadogenesis was analyzed through the parameters: precipitable water, lifting condensation level pressure, lifting condensation height, level of free convection height, level of neutral buoyancy, lifted index, K index, Showalter index, totals totals index, convective potential available energy (CAPE), and convective inhibition (CIN). Since CAPE and CIN are prominent in various severe weather outbreaks, they would be the greatest conducive to tornadogenesis. The parameters listed are all part of a /derived/ CSV file downloaded and displayed in a data frame. Various methods were executed to analyze data and display charts and measures of central tendency and variation. The magnitude and number of tornadoes depended on the independent values listed. After studying all parameters, convective potential available energy and convective inhibition were the most critical parameters out of the various variables. The data did support the correlation of CIN playing a prominent role in tornado development and inhibition, but CAPE did not have any significant correlation towards tornado development. 

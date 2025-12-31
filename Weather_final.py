@@ -1,5 +1,4 @@
 
-# -*- coding: utf-8 -*-
 """
 Created on Wed Nov 16 18:52:51 2022
 This program reads the weather data file which has Header and detail record. 
@@ -8,35 +7,28 @@ header data. The following program reads the IGRA data derived file and parses t
 extract header files and writes into a new file to import for further analysis
 @author: Suchit Basineni
 """
-# Importing Libraries
-
 import scipy
 from scipy import stats
 from sklearn import datasets
 import pandas as pd
 import seaborn as sb
-# import numpy as np
+#import numpy as np
 #import os
 
-#Create a variable for the file name
-filename = "USM00072357.txt"
+filename = "USM00072357.txt" 
 filenamew = "Igra_data.txt"
-#initialize an empty list
 word_list= []
-#w tells python we are opening the file to write into it
-outfile = open(filenamew, 'w')
-#Open the file
+outfile = open(filenamew, 'w') #Open Files
 infile = open(filename, 'r') 
 lines = infile.readlines() 
-for line in lines: #lines is a list with each item representing a line of the file
+for line in lines: 
 	if '#' in line:
          word_list.append(line)	
-outfile.writelines(word_list) 
+outfile.writelines(word_list) #write into output file
 outfile.close()
-infile.close() #close the file when you're done!
+infile.close() 
 
-# Read the fixed format file into a Pandas Data Frame
-
+#create pandas data frame
 cols = ['ID','Year','Month','Day','Hour','RELTIME','NUMLEV','PW','INVPRESS','INVHGT','INVTEMPDIF','MIXPRESS','MIXHGT'
         ,'FRZPRESS','FRZHGT','LCLPRESS','LCLHGT','LFCPRESS','LFCHGT','LNBPRESS','LNBHGT','LI','SI','KI','TTI','CAPE','CIN']
 df = pd.read_fwf('/Users/basin/.spyder-py3/Igra_data.txt', 
@@ -46,30 +38,23 @@ df.shape
 print(df)
 df.describe(include='all')
 
+#Remove "NaN" values & years greater than 2007
 df_2007 = df[df.Year >= 2007 ]
-
 df_2007 = df_2007[(df_2007.PW != -99999)]
-df_2007 = df_2007[(df_2007.CAPE != -99999)]  
-# No of Rows and columns                
-df.shape
+df_2007 = df_2007[(df_2007.CAPE != -99999)]
 
-# Variable types 
-df.dtypes
-
-#Used to import the actual tornado reports
+#Import Tornado reports
 df_tor = pd.read_csv('1950-2021_actual_tornadoes.csv')
 df_tor.describe(include='all').transpose()
 df_tor_f = df_tor[['om','yr','mo','dy','st','mag']]
-#removing duplicate tornado records
 df_tor_u =  df_tor_f.drop_duplicates()
 
-# using group by to find the maximum F-Scale Tornado happened on that day
+#Using group by to find the maximum F-Scale Tornado happened on that day
 df_max = df_tor_u.groupby(['yr','mo','dy','st'])['mag'].max().reset_index(name='max_mag_f_scale')
-# Using group by to add the no of recorded tornadoes happened by date and state
+#Using group by to add the # of recorded tornadoes happened by date and state
 df_cnt = df_tor_u.groupby(['yr','mo','dy','st']).size().reset_index(name='no_of_tornadoes')
-#Merge the data to prepare a final data frame to refer for the days tornadoes happened.
+# Merge data into a final dataframe
 df_grp = pd.merge(df_max,df_cnt, how='inner')
-#Filtering data by year and state
 df_tor_2007 = df_grp[df_grp.yr >= 2007]
 df_tor_2007_OK = df_tor_2007[df_tor_2007.st == "OK"]
 
@@ -77,7 +62,7 @@ df_tor_2007_OK = df_tor_2007[df_tor_2007.st == "OK"]
 frames = pd.merge(df_2007, df_tor_2007_OK, how='left',left_on=['Year','Month','Day'] , right_on = ['yr','mo','dy'])
 final_frames = frames[['Year','Month','Day','Hour','RELTIME','PW','st','max_mag_f_scale','no_of_tornadoes',
                        'LCLPRESS','LNBHGT','LI','SI','KI','TTI','CAPE','CIN']] 
-# Fill the NaN values 
+# Fill the NaN values to resolve runtime issues
 df_final =final_frames.fillna(value={'st':'OK','no_of_tornadoes':0,'max_mag_f_scale':-9})
 df_final.rename(columns = {'max_mag_f_scale':'f_scale'}, inplace = True)
 
@@ -111,15 +96,8 @@ sb.heatmap(pearsoncorr1,
             annot=True,
             linewidth=0.5)
 
-#[frames.Year,frames.Month,frames.Day]
-#result = pd.concat(frames)
- 
-
 #Descriptive Statistics.
 df_dsc_Stat= df_corr.describe().transpose()
-
-
-
 
 #Getting the Corelation coefficient and the P Value 
 coff_df = pd.DataFrame(columns=['r','p'])
@@ -134,11 +112,9 @@ coff_df
 
 coff_df.rename(columns = {'r':'corr-coeff','p':'p-value'}, inplace = True)
 
-
-# Graphical analysis 
+# Correlation coefficent plot scale
 df_corr['f_scale']=df_corr.f_scale.astype(str)
 sb.histplot(data=df_corr[df_corr.f_scale != '-9.0'], x= 'f_scale' )
-#import seaborn as sns
 sb.scatterplot(x="CAPE", y="CIN", hue="f_scale" ,data=df_corr);
 sb.scatterplot(x="CAPE", y="CIN", hue="f_scale" ,data=df_corr[df_corr.f_scale != '-9.0']);
 sb.boxplot(x=df_corr['CAPE'], y=df_corr['f_scale'], showmeans=True)
